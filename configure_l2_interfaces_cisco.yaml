@@ -1,0 +1,100 @@
+- name: Configure Cisco interfaces on L2 level
+  hosts: all
+  gather_facts: false
+  connection: network_cli
+  vars_files:
+    - secrets/dc-secrets.yaml
+  tasks:
+    - name: Ensure interfaces are present and configured as access
+      cisco.ios.ios_interfaces:
+        config:
+          - name: '{{ item.name }}'
+            description: '{{ item.description }}'
+            enabled: true
+      loop: "{{ enabled_interfaces }}"
+
+    - name: Configure access VLAN on the interfaces
+      cisco.ios.ios_l2_interfaces:
+        config:
+          - name: '{{ item.name }}'
+            mode: access
+            access:
+              vlan: '{{ item.vlan_tag }}'
+      loop: "{{ enabled_interfaces }}"
+
+    - name: Configure Voice VLAN on the interfaces
+      cisco.ios.ios_l2_interfaces:
+        config:
+          - name: '{{ item.name }}'
+            voice:
+              vlan: '{{ item.voice_vlan }}'
+      loop: "{{ enabled_interfaces }}"
+      when: item.voice_vlan is defined
+
+    - name: Configure spanning-tree portfast on the cisco interfaces with edge
+      cisco.ios.ios_config:
+        lines:
+          - spanning-tree portfast edge
+        parents: "interface {{ item.name }}"
+      loop: "{{ enabled_interfaces }}"
+      when: portfast_edge is defined and portfast_edge == true
+
+    - name: Configure spanning-tree portfast on the the cisco interfaces without edge
+      cisco.ios.ios_config:
+        lines:
+          - spanning-tree portfast
+        parents: "interface {{ item.name }}"
+      loop: "{{ enabled_interfaces }}"
+      when: portfast_edge is defined and portfast_edge == false
+
+    - name: Configure port security on the interfaces
+      cisco.ios.ios_config:
+        lines:
+          - switchport port-security
+          - switchport port-security mac-address sticky
+          - switchport port-security violation restrict
+        parents: "interface {{ item.name }}"
+      loop: "{{ enabled_interfaces }}"
+      when: port_security is defined and port_security == true
+    
+    - name: Configure port security maximum when mac_value is defined
+      cisco.ios.ios_config:
+        lines:
+          - switchport port-security
+          - switchport port-security mac-address sticky
+          - switchport port-security violation restrict
+          - switchport port-security maximum {{ item.mac_value }}
+        parents: "interface {{ item.name }}"
+      when: item.mac_value is defined
+      loop: "{{ enabled_interfaces }}"
+          
+    - name: restore disabled interfaces to default state
+      cisco.ios.ios_interfaces:
+        config:
+          - name: '{{ item.name }}'
+            description: '{{ item.description }}'
+            enabled: false
+      loop: "{{ disabled_interfaces }}"
+
+    - name: Put the disabled interfaces in the Parking VLAN
+      cisco.ios.ios_l2_interfaces:
+        config:
+          - name: '{{ item.name }}'
+            mode: access
+            access:
+              vlan: '{{ item.vlan_tag }}'
+      loop: "{{ disabled_interfaces }}"
+
+    - name: Configure trunk interfaces
+      cisco.ios.ios_l2_interfaces:
+        config:
+          - name: '{{ item.name }}'
+            mode: trunk
+            trunk:
+              allowed_vlans: '{{ item.allowed_vlans }}'
+      loop: "{{ trunk_interfaces }}"
+      when: item.trunk is defined and item.trunk == true
+
+    - name: Save config
+      cisco.ios.ios_command:
+        commands: wr

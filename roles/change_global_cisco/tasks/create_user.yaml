@@ -1,0 +1,17 @@
+- name: Create a new user
+  cisco.ios.ios_user:
+    name: test
+    nopassword: true
+    privilege: 15
+    state: present
+
+- name: Change Password for User test
+  cisco.ios.ios_user:
+    name: test
+    configured_password: "{{ passwd }}"
+    update_password: always
+    state: present
+
+- name: Save config
+  cisco.ios.ios_command:
+    commands: wr

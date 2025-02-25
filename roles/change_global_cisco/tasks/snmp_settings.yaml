@@ -1,0 +1,23 @@
+- name: Config snmp and syslog
+  cisco.ios.ios_config:
+    lines:
+      - access-list 66 permit {{ syslog }}
+      - access-list 66 deny   any log
+      - snmp-server community {{ snmp_community }} RO 66
+      - snmp-server location {{ snmp_location }} 
+      - snmp-server contact {{ snmp_contact }}
+      - logging host {{ syslog }}
+      - logging source-interface {{ logging_ntp_source }}
+
+- name: Check result
+  cisco.ios.ios_command:
+    commands: sh snmp
+  register: result
+
+- name: Debug lines
+  ansible.builtin.debug: 
+    var: result.stdout_lines
+
+- name: Save config
+  cisco.ios.ios_command:
+    commands: wr

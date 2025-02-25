@@ -1,0 +1,19 @@
+---
+- name: Check logging configuration on Cisco switches
+  hosts: all
+  gather_facts: false
+  connection: network_cli
+  vars_files:
+    - secrets/dc-secrets.yaml
+  
+  tasks:
+
+    - name: Check logging configuration
+      ios_command:
+        commands:
+          - show running-config | include logging
+      register: logging_config
+
+    - name: Display logging configuration
+      debug:
+        var: logging_config.stdout_lines

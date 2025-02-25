@@ -1,0 +1,14 @@
+---
+- name: change hostname
+  hosts: all
+  gather_facts: false
+  connection: network_cli
+  vars_files:
+    - secrets/dc-secrets.yaml
+  
+  tasks:
+
+    - name: Change hostname
+      ce_config:
+        lines:
+          - sysname {{ inventory_hostname }} 

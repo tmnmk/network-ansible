@@ -1,0 +1,12 @@
+- name: Create interfaces
+  paloaltonetworks.panos.panos_l3_subinterface:
+    provider: '{{ device }}'
+    name: '{{ item.name }}'
+    comment: '{{ item.comment }}'
+    enable_dhcp: false
+    tag: '{{ item.vlan_tag }}'
+    ip: '{{ item.ip | default([]) }}'
+    zone_name: '{{ item.comment }}'
+    vr_name: '{{ item.vr_name }}'
+    management_profile: "Ping from LAN"
+  loop: "{{ interfaces }}"

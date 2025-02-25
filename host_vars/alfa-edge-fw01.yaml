@@ -1,0 +1,3 @@
+interfaces:
+    - {name: 'ae1.702', vr_name: 'MB_LAN', comment: 'SERVERS', vlan_tag: 702, ip: ['10.7.2.1/24']}
+  

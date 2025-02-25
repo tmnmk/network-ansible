@@ -1,0 +1,71 @@
+dhcp_snooping: true
+portfast_edge: true
+
+## Specify the trusted interfaces
+trusted_interfaces:
+  - {name: 'Port-channel1'}
+  - {name: 'TenGigabitEthernet1/1/1'}
+  - {name: 'TenGigabitEthernet1/1/2'}
+
+## Specify the untrusted interfaces
+untrusted_interfaces:
+  - {name: 'GigabitEthernet1/0/1', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/2', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/3', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/4', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/5', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/6', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/7', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/8', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/9', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/10', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/11', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/12', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/13', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/14', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/15', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/16', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/17', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/18', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/19', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/20', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/21', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/22', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/23', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/24', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/26', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/28', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/29', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/30', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/31', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/32', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/33', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/34', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/35', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/36', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/37', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/38', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/39', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/40', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/41', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/42', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/43', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/44', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/45', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/46', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/47', limit_rate: 10}
+  - {name: 'GigabitEthernet1/0/48', limit_rate: 10}
+
+trunk_interfaces:
+  - {name: 'Port-channel1', description: '**Connected to CSW01 Po31**', allowed_vlans: '3000, 3001', trunk: True}
+  - {name: 'TenGigabitEthernet1/1/1', description: '**Connected to CSW01-1 Tw1/0/44 **', allowed_vlans: '3000, 3001', trunk: True}
+  - {name: 'TenGigabitEthernet1/1/2', description: '**Connected to CSW01-2 Tw2/0/44 **', allowed_vlans: '3000, 3001', trunk: True}
+
+enabled_interfaces:
+    - {name: 'Port-channel101', description: '$$Connected SRV1$$', vlan_tag: 500}
+    - {name: 'Port-channel102', description: '$$Connected SRV2$$', vlan_tag: 500}
+
+disabled_interfaces:
+    - {name: 'GigabitEthernet1/0/1', description: '## UNUSED ##', vlan_tag: 999}
+    - {name: 'GigabitEthernet1/0/2', description: '## UNUSED ##', vlan_tag: 999}
+    - {name: 'GigabitEthernet1/0/3', description: '## UNUSED ##', vlan_tag: 999}

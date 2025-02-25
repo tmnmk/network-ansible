@@ -1,0 +1,27 @@
+- name: Configure ip dhcp snooping globally
+  cisco.ios.ios_config:
+    lines:
+      - ip dhcp snooping
+      - ip dhcp snooping vlan {{ item.vlan_id }}
+  loop: "{{ dhcp_vlans }}"
+  when: (dhcp_snooping | default(false))
+
+- name: Configure trusted interfaces
+  cisco.ios.ios_config:
+    lines:
+      - ip dhcp snooping trust
+    parents: "interface {{ item.name }}"
+  loop: "{{ trusted_interfaces }}"
+  when: (dhcp_snooping | default(false))
+
+- name: Configure untrusted interfaces
+  cisco.ios.ios_config:
+    lines:
+      - ip dhcp snooping limit rate {{ item.limit_rate }}
+    parents: "interface {{ item.name }}"
+  loop: "{{ untrusted_interfaces }}"
+  when: (dhcp_snooping | default(false))
+
+- name: Save config
+  cisco.ios.ios_command:
+    commands: wr

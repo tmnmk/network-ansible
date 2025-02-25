@@ -1,0 +1,28 @@
+- name: Gather Cisco device facts
+  hosts: all
+  gather_facts: false
+  connection: network_cli
+  vars_files:
+    - secrets/dc-secrets.yaml
+
+  tasks:
+    - name: Gather facts from Cisco devices
+      cisco.ios.ios_facts:
+        gather_subset: all
+
+    - name: Display gathered facts
+      ansible.builtin.debug:
+        var: ansible_net_version
+
+    - name: Write version to host_vars
+      ansible.builtin.set_fact:
+        version: "{{ ansible_net_version }}"
+      delegate_to: localhost
+        
+    - name: Save version to host_vars
+      copy:
+        content: |
+          ios_version: "{{ version }}"
+        dest: "version/{{ inventory_hostname }}.yml"
+        mode: "0644"
+      delegate_to: localhost 

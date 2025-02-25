@@ -1,0 +1,29 @@
+- name: Import log_settings.yaml
+  ansible.builtin.import_tasks: log_settings.yaml
+  tags: 
+    - never
+    - log_settings
+
+- name: Import ntp_settings.yaml
+  ansible.builtin.import_tasks: ntp_settings.yaml
+  tags: 
+    - never
+    - ntp_settings
+
+- name: Import snmp_settings.yaml
+  ansible.builtin.import_tasks: snmp_settings.yaml
+  tags: 
+    - never
+    - snmp_settings
+
+- name: Import create_user.yaml
+  ansible.builtin.import_tasks: create_user.yaml
+  tags: 
+    - never
+    - create_user
+
+- name: Import configure-DAI.yaml
+  ansible.builtin.import_tasks: configure_DAI.yaml
+  tags: 
+    - never
+    - configure_dai

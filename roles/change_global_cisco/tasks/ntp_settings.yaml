@@ -1,0 +1,26 @@
+- name: Config ntp1
+  cisco.ios.ios_ntp:
+    server: '{{ ntp_srv_1 }}'
+    source_int: '{{ logging_ntp_source }}'
+    state: present
+- name: Config ntp2
+  cisco.ios.ios_ntp:
+    server: '{{ ntp_srv_2 }}'
+    source_int: '{{ logging_ntp_source }}'
+    state: present
+- name: Set proper time zone
+  cisco.ios.ios_config:
+    lines:
+      - clock timezone AUH 4 0
+- name: Check result
+  cisco.ios.ios_command:
+    commands: show ntp associations
+  register: result
+
+- name: Debug lines
+  ansible.builtin.debug: 
+    var: result.stdout_lines
+
+- name: Save config
+  cisco.ios.ios_command:
+    commands: wr

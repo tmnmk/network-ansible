@@ -1,0 +1,8 @@
+- name: Change global settings on Cisco devices
+  hosts: all
+  connection: network_cli
+  vars_files:
+    - secrets/dc-secrets.yaml
+  gather_facts: false
+  roles:
+    - change_global_cisco

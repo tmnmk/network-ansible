@@ -1,0 +1,29 @@
+---
+- name: Check NTP configuration on Cisco switches
+  hosts: all
+  gather_facts: false
+  connection: network_cli
+  vars_files:
+    - secrets/dc-secrets.yaml
+  
+  tasks:
+
+    - name: Check NTP configuration from running-config
+      ios_command:
+        commands:
+          - show running-config | include ntp
+      register: ntp_config
+
+    - name: Check NTP status
+      ios_command:
+        commands:
+          - show ntp associations
+      register: ntp_status
+
+    - name: Display NTP configuration from running-config
+      debug:
+        var: ntp_config.stdout_lines
+
+    - name: Display NTP status
+      debug:
+        var: ntp_status.stdout_lines

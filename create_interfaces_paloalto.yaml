@@ -1,0 +1,13 @@
+- name: Create interfaces on Palo Alto devices
+  hosts: all
+  connection: local
+  vars_files:
+    - secrets/dc-secrets.yaml
+  vars:
+    device:
+      ip_address: '{{ ansible_host }}'
+      username: '{{ ansible_user }}'
+      password: '{{ ansible_password }}'
+  gather_facts: false
+  roles:
+    - create_interfaces_paloalto

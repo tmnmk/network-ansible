@@ -1,0 +1,10 @@
+- name: Import interface_dhcp.yaml
+  ansible.builtin.import_tasks: interface_dhcp.yaml
+  tags: 
+    - never
+    - interface_dhcp
+- name: Import interface.yaml
+  ansible.builtin.import_tasks: interface.yaml
+  tags: 
+    - never
+    - interface
