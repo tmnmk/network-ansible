@@ -1,0 +1,26 @@
+---
+
+#First NTP server
+ntp_srv_1: "10.10.1.2"
+
+#Second NTP server
+ntp_srv_2: "none"
+
+
+#Main Syslog server
+syslog: "10.10.1.128"
+
+#Backup Syslog server
+syslog_backup: "10.10.2.128"
+
+#Logging/NTP source interface
+logging_ntp_source: "Vlan11"
+
+snmp_contact: "IT Department"
+
+snmp_community: "public"
+
+#Vlans with DHCP for snooping
+dhcp_vlans:
+  - {vlan_id: 506}
+  - {vlan_id: 20}

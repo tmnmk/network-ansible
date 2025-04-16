@@ -1,0 +1,8 @@
+- name: Change global settings on Huawei devices
+  hosts: huawei_switches
+  connection: network_cli
+  vars_files:
+    - secrets/dc-secrets.yaml
+  gather_facts: false
+  roles:
+    - change_global_huawei 

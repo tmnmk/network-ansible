@@ -1,0 +1,5 @@
+- name: Import configure-DAI.yaml
+  ansible.builtin.import_tasks: configure_DAI.yaml
+  tags: 
+    - never
+    - configure_dai

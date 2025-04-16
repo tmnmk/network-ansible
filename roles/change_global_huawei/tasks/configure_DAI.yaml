@@ -1,0 +1,33 @@
+- name: Configure DHCP snooping globally
+  ansible.netcommon.cli_command:
+    command: |
+      system-view
+      dhcp snooping enable
+      dhcp snooping enable vlan {{ item.vlan_id }}
+      return
+  loop: "{{ dhcp_vlans }}"
+  when: (dhcp_snooping | default(false))
+
+- name: Configure trusted interfaces
+  ansible.netcommon.cli_command:
+    command: |
+      system-view
+      interface {{ item.name }}
+      dhcp snooping trusted
+      return
+  loop: "{{ trusted_interfaces }}"
+  when: (dhcp_snooping | default(false))
+
+- name: Configure untrusted interfaces
+  ansible.netcommon.cli_command:
+    command: |
+      system-view
+      interface {{ item.name }}
+      dhcp snooping rate-limit {{ item.limit_rate }}
+      return
+  loop: "{{ untrusted_interfaces }}"
+  when: (dhcp_snooping | default(false))
+
+- name: Save configuration
+  ansible.netcommon.cli_command:
+    command: save 
