@@ -19,8 +19,3 @@ logging_ntp_source: "Vlan11"
 snmp_contact: "IT Department"
 
 snmp_community: "public"
-
-#Vlans with DHCP for snooping
-dhcp_vlans:
-  - {vlan_id: 506}
-  - {vlan_id: 20}

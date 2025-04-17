@@ -3,6 +3,7 @@
     command: |
       system-view
       dhcp snooping enable
+      dhcp snooping user-bind arp-detect enable
       dhcp snooping enable vlan {{ item.vlan_id }}
       return
   loop: "{{ dhcp_vlans }}"
@@ -23,11 +24,17 @@
     command: |
       system-view
       interface {{ item.name }}
-      dhcp snooping rate-limit {{ item.limit_rate }}
+      dhcp snooping enable
+      dhcp snooping check dhcp-giaddr enable
+      dhcp snooping check dhcp-request enable
+      dhcp snooping user-bind max-number 20
+      dhcp snooping check dhcp-chaddr enable
       return
   loop: "{{ untrusted_interfaces }}"
   when: (dhcp_snooping | default(false))
 
 - name: Save configuration
   ansible.netcommon.cli_command:
-    command: save 
+    command: |
+      save
+      y
