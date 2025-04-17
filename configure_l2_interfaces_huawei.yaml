@@ -1,0 +1,141 @@
+---
+- name: Configure Huawei S5700 interfaces on L2 level
+  hosts: all
+  gather_facts: false
+  connection: network_cli
+ 
+  serial: 5  # Control parallel execution
+  vars_files:
+    - secrets/dc-secrets.yaml
+
+  tasks:
+    - name: Validate input variables
+      fail:
+        msg: "Invalid VLAN tag {{ item.vlan_tag }} for interface {{ item.name }}"
+      when: item.vlan_tag is not defined or item.vlan_tag < 1 or item.vlan_tag > 4094
+      loop: "{{ enabled_interfaces + disabled_interfaces }}"
+
+    - name: Configure access interfaces
+      block:
+        - name: Configure interface description and enable it
+          ansible.netcommon.cli_command:
+            command: |
+              system-view
+              interface {{ item.name }}
+              description {{ item.description }}
+              undo shutdown
+              quit
+          loop: "{{ enabled_interfaces }}"
+          register: interface_config
+
+        - name: Configure access VLAN on the interfaces
+          ansible.netcommon.cli_command:
+            command: |
+              system-view
+              interface {{ item.name }}
+              port link-type access
+              port default vlan {{ item.vlan_tag }}
+              quit
+          loop: "{{ enabled_interfaces }}"
+          register: vlan_config
+
+        - name: Configure Voice VLAN on the interfaces
+          ansible.netcommon.cli_command:
+            command: |
+              system-view
+              interface {{ item.name }}
+              voice-vlan {{ item.voice_vlan }} enable
+              quit
+          loop: "{{ enabled_interfaces }}"
+          when: item.voice_vlan is defined
+          register: voice_vlan_config
+
+    - name: Configure spanning-tree settings
+      block:
+        - name: Configure spanning-tree edge port
+          ansible.netcommon.cli_command:
+            command: |
+              system-view
+              interface {{ item.name }}
+              stp edged-port enable
+              quit
+          loop: "{{ enabled_interfaces }}"
+          when: portfast_edge is defined and portfast_edge == true
+
+    - name: Configure port security
+      block:
+        - name: Configure basic port security
+          ansible.netcommon.cli_command:
+            command: |
+              system-view
+              interface {{ item.name }}
+              port-security enable
+              port-security mac-address sticky
+              port-security protect-action restrict
+              quit
+          loop: "{{ enabled_interfaces }}"
+          when: port_security is defined and port_security == true
+
+        - name: Configure port security with maximum MAC addresses
+          ansible.netcommon.cli_command:
+            command: |
+              system-view
+              interface {{ item.name }}
+              port-security enable
+              port-security mac-address sticky
+              port-security protect-action restrict
+              port-security max-mac-num {{ item.mac_value }}
+              quit
+          when: item.mac_value is defined
+          loop: "{{ enabled_interfaces }}"
+
+    - name: Configure disabled interfaces
+      block:
+        - name: Restore disabled interfaces to default state
+          ansible.netcommon.cli_command:
+            command: |
+              system-view
+              interface {{ item.name }}
+              description {{ item.description }}
+              shutdown
+              quit
+          loop: "{{ disabled_interfaces }}"
+
+        - name: Put disabled interfaces into default state
+          ansible.netcommon.cli_command:
+            command: |
+              system-view
+              interface {{ item.name }}
+              clear configuration interface {{ item.name }}
+              quit
+          loop: "{{ disabled_interfaces }}"
+
+        - name: Put the disabled interfaces in the Parking VLAN
+          ansible.netcommon.cli_command:
+            command: |
+              system-view
+              interface {{ item.name }}
+              port link-type access
+              port default vlan {{ item.vlan_tag }}
+              quit
+          loop: "{{ disabled_interfaces }}"
+
+    - name: Configure trunk interfaces
+      ansible.netcommon.cli_command:
+        command: |
+          system-view
+          interface {{ item.name }}
+          port link-type trunk
+          port trunk allow-pass vlan {{ item.allowed_vlans }}
+          quit
+      loop: "{{ trunk_interfaces }}"
+      when: item.trunk is defined and item.trunk == true
+      register: trunk_config
+
+    - name: Save configuration
+      ansible.netcommon.cli_command:
+        command: |
+          save
+          yes
+      register: save_result
+      failed_when: save_result.failed 
