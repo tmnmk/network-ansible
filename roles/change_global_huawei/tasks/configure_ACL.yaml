@@ -1,0 +1,42 @@
+---
+- name: Remove SNMP group configuration
+  ansible.netcommon.cli_command:
+    command: |
+      system-view
+      undo snmp-agent group v3 ndacmonitor privacy
+      return
+
+
+- name: Remove existing ACLs
+  ansible.netcommon.cli_command:
+    command: |
+      system-view
+      undo acl {{ item.acl_number }}
+      return
+  loop: "{{ basic_acls | default([]) }}"
+  when: basic_acls is defined
+
+- name: Configure Basic ACL
+  ansible.netcommon.cli_command:
+    command: |
+      system-view
+      acl {{ item.acl_number }}
+      {{ item.rules | join('\n') }}
+      return
+  loop: "{{ basic_acls | default([]) }}"
+  when: basic_acls is defined
+
+- name: Apply SNMP ACL to group
+  ansible.netcommon.cli_command:
+    command: |
+      system-view
+      snmp-agent group v3 ndacmonitor privacy read-view iso-view acl {{ item.acl_number }}
+      return
+  loop: "{{ snmp_groups | default([]) }}"
+  when: snmp_groups is defined
+
+- name: Save configuration
+  ansible.netcommon.cli_command:
+    command: |
+      save
+      y 

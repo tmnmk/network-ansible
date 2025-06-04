@@ -3,3 +3,9 @@
   tags: 
     - never
     - configure_dai
+
+- name: Import configure-ACL.yaml
+  ansible.builtin.import_tasks: configure_ACL.yaml
+  tags:
+    - never
+    - configure_acl
