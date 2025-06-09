@@ -5,13 +5,9 @@
 basic_acls:
   - acl_number: 2001
     rules:
-      - rule 5 permit source 192.168.1.0 0.0.0.255
-      - rule 10 deny source any
+      - rule 5 permit source 192.168.1.0 0.0.0.255 0
+      - rule 10 deny source any 
 
 # SNMP v3 Groups
-snmp_groups:
-  - group_name: public
-    security_level: privacy
-    read_view: iso-view
-    acl_number: 2001
+group_name: public
 

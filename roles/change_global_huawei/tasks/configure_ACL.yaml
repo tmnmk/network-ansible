@@ -3,9 +3,9 @@
   ansible.netcommon.cli_command:
     command: |
       system-view
-      undo snmp-agent group v3 {{ community}} privacy
+      undo snmp-agent group v3 {{ group_name }} privacy
       return
-
+  when: basic_acls is defined
 
 - name: Remove existing ACLs
   ansible.netcommon.cli_command:
@@ -21,7 +21,9 @@
     command: |
       system-view
       acl {{ item.acl_number }}
-      {{ item.rules | join('\n') }}
+      {% for rule in item.rules %}
+      {{ rule }}
+      {% endfor %}
       return
   loop: "{{ basic_acls | default([]) }}"
   when: basic_acls is defined
@@ -30,10 +32,10 @@
   ansible.netcommon.cli_command:
     command: |
       system-view
-      snmp-agent group v3 {{ community}} privacy read-view iso-view acl {{ item.acl_number }}
+      snmp-agent group v3 {{ group_name }} privacy read-view iso-view acl {{ item.acl_number }}
       return
-  loop: "{{ snmp_groups | default([]) }}"
-  when: snmp_groups is defined
+  loop: "{{ basic_acls | default([]) }}"
+  when: basic_acls is defined
 
 - name: Save configuration
   ansible.netcommon.cli_command:
